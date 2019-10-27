@@ -3,7 +3,7 @@ from individual import Individual
 
 class Generation:
     def __init__(self, N):
-        self.size = 10
+        self.size = 50
         self.individuals = [Individual(N) for i in range(self.size)]
         self.individual_len = N
 

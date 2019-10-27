@@ -1,5 +1,5 @@
 import random
-from item import Item
+
 
 class Individual:
     def __init__(self, N):
@@ -13,10 +13,9 @@ class Individual:
             self.chromosome[i] = random.randint(0, 1)
         self.calc_fitness(items)
         while not self.feasible(S):
-            for i in range(len(self.chromosome)):
-                self.chromosome[i] = random.randint(0, 1)
+            i = random.randint(0, self.chromosome_len-1)
+            self.chromosome[i] = random.randint(0, 1)
             self.calc_fitness(items)
-
 
     def show(self):
         print("Chromosome:", self.chromosome, "Fitness:", self.fitness)
@@ -38,6 +37,11 @@ class Individual:
     def feasible(self, S):
         return self.fitness <= S
 
+    def mutate_if_not_feasible(self, S, items):
+        while not self.feasible(S):
+            i = random.randint(0, self.chromosome_len - 1)
+            self.chromosome[i] ^= 1
+            self.calc_fitness(items)
 
     def mutate(self, P_m, items, S):
         for i in range(self.chromosome_len):
@@ -45,14 +49,8 @@ class Individual:
             if r <= P_m:
                 self.chromosome[i] ^= 1
         self.calc_fitness(items)
-
-        while not self.feasible(S):
-            for i in range(self.chromosome_len):
-                r = random.random()
-                if r <= P_m:
-                    self.chromosome[i] ^= 1
-            self.calc_fitness(items)
-
+        if self.feasible(S):
+            self.mutate_if_not_feasible(S, items)
 
     def crossover(self, individual, locus, P_c, items, S, P_m):
         N = len(self.chromosome)
@@ -71,9 +69,9 @@ class Individual:
             offspring1.calc_fitness(items)
             offspring2.calc_fitness(items)
 
-        while not offspring1.feasible(S):
-            offspring1.mutate(P_m, items, S)
-        while not offspring2.feasible(S):
-            offspring2.mutate(P_m, items, S)
+        if not offspring1.feasible(S):
+            offspring1.mutate_if_not_feasible(S, items)
+        if not offspring2.feasible(S):
+            offspring2.mutate_if_not_feasible(S, items)
 
         return offspring1, offspring2

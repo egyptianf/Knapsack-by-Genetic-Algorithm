@@ -9,7 +9,7 @@ class GA:
         self.knapsack = knapsack
         self.G = 1000  # Number of generations
         self.P_c = 0.4
-        self.P_m = 0.05
+        self.P_m = 0.001
 
     def initialize(self):
         g = Generation(self.knapsack.N)
